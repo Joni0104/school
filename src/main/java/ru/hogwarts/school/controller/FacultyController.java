@@ -6,7 +6,6 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/faculty")
@@ -24,22 +23,30 @@ public class FacultyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Faculty> getFaculty(@PathVariable Long id) {
-        Optional<Faculty> faculty = facultyService.findFaculty(id);
-        return faculty.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Faculty faculty = facultyService.findFaculty(id);
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Faculty> updateFaculty(@PathVariable Long id, @RequestBody Faculty faculty) {
-        Optional<Faculty> updatedFaculty = facultyService.editFaculty(id, faculty);
-        return updatedFaculty.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @PutMapping
+    public ResponseEntity<Faculty> updateFaculty(@RequestBody Faculty faculty) {
+        Faculty updatedFaculty = facultyService.editFaculty(faculty);
+        if (updatedFaculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedFaculty);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFaculty(@PathVariable Long id) {
-        boolean deleted = facultyService.deleteFaculty(id);
-        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        Faculty faculty = facultyService.findFaculty(id);
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        facultyService.deleteFaculty(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/filter/{color}")
@@ -54,8 +61,10 @@ public class FacultyController {
 
     @GetMapping("/{id}/students")
     public ResponseEntity<List<Student>> getFacultyStudents(@PathVariable Long id) {
-        Optional<Faculty> faculty = facultyService.findFaculty(id);
-        return faculty.map(f -> ResponseEntity.ok(f.getStudents()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Faculty faculty = facultyService.findFaculty(id);
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty.getStudents());
     }
 }
