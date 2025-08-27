@@ -6,6 +6,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/student")
@@ -23,30 +24,22 @@ public class StudentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable Long id) {
-        Student student = studentService.findStudent(id);
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(student);
+        Optional<Student> student = studentService.findStudent(id);
+        return student.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping
-    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        Student updatedStudent = studentService.editStudent(student);
-        if (updatedStudent == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updatedStudent);
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) {
+        Optional<Student> updatedStudent = studentService.editStudent(id, student);
+        return updatedStudent.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-        Student student = studentService.findStudent(id);
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        }
-        studentService.deleteStudent(id);
-        return ResponseEntity.ok().build();
+        boolean deleted = studentService.deleteStudent(id);
+        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/filter/{age}")
@@ -61,10 +54,8 @@ public class StudentController {
 
     @GetMapping("/{id}/faculty")
     public ResponseEntity<Faculty> getStudentFaculty(@PathVariable Long id) {
-        Student student = studentService.findStudent(id);
-        if (student == null || student.getFaculty() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(student.getFaculty());
+        Optional<Student> student = studentService.findStudent(id);
+        return student.map(s -> ResponseEntity.ok(s.getFaculty()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

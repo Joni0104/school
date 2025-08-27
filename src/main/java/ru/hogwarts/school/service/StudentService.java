@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -17,19 +18,26 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public Student findStudent(Long id) {
-        return studentRepository.findById(id).orElse(null);
+    public Optional<Student> findStudent(Long id) {
+        return studentRepository.findById(id);
     }
 
-    public Student editStudent(Student student) {
-        if (studentRepository.existsById(student.getId())) {
-            return studentRepository.save(student);
+    public Optional<Student> editStudent(Long id, Student student) {
+        return studentRepository.findById(id)
+                .map(existingStudent -> {
+                    existingStudent.setName(student.getName());
+                    existingStudent.setAge(student.getAge());
+                    existingStudent.setFaculty(student.getFaculty());
+                    return studentRepository.save(existingStudent);
+                });
+    }
+
+    public boolean deleteStudent(Long id) {
+        if (studentRepository.existsById(id)) {
+            studentRepository.deleteById(id);
+            return true;
         }
-        return null;
-    }
-
-    public void deleteStudent(Long id) {
-        studentRepository.deleteById(id);
+        return false;
     }
 
     public List<Student> getStudentsByAge(int age) {
