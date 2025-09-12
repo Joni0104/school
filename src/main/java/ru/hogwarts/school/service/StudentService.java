@@ -18,20 +18,26 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public Student findStudent(Long id) {
-        Optional<Student> optionalStudent = studentRepository.findById(id);
-        return optionalStudent.orElse(null);
+    public Optional<Student> findStudent(Long id) {
+        return studentRepository.findById(id);
     }
 
-    public Student editStudent(Student student) {
-        if (studentRepository.existsById(student.getId())) {
-            return studentRepository.save(student);
+    public Optional<Student> editStudent(Long id, Student student) {
+        return studentRepository.findById(id)
+                .map(existingStudent -> {
+                    existingStudent.setName(student.getName());
+                    existingStudent.setAge(student.getAge());
+                    existingStudent.setFaculty(student.getFaculty());
+                    return studentRepository.save(existingStudent);
+                });
+    }
+
+    public boolean deleteStudent(Long id) {
+        if (studentRepository.existsById(id)) {
+            studentRepository.deleteById(id);
+            return true;
         }
-        return null;
-    }
-
-    public void deleteStudent(Long id) {
-        studentRepository.deleteById(id);
+        return false;
     }
 
     public List<Student> getStudentsByAge(int age) {
@@ -41,5 +47,4 @@ public class StudentService {
     public List<Student> getStudentsByAgeBetween(int minAge, int maxAge) {
         return studentRepository.findByAgeBetween(minAge, maxAge);
     }
-
 }
