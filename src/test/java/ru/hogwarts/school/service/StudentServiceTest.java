@@ -156,4 +156,45 @@ class StudentServiceTest {
         assertEquals("Harry Potter", result.get(0).getName());
         verify(studentRepository, times(1)).findByAgeBetween(16, 18);
     }
+
+    @Test
+    void getTotalCount_shouldReturnStudentCount() {
+        // given
+        when(studentRepository.countAllStudents()).thenReturn(10);
+
+        // when
+        Integer result = studentService.getTotalCount();
+
+        // then
+        assertEquals(10, result);
+        verify(studentRepository, times(1)).countAllStudents();
+    }
+
+    @Test
+    void getAverageAge_shouldReturnAverageAge() {
+        // given
+        when(studentRepository.findAverageAge()).thenReturn(17.5);
+
+        // when
+        Double result = studentService.getAverageAge();
+
+        // then
+        assertEquals(17.5, result);
+        verify(studentRepository, times(1)).findAverageAge();
+    }
+
+    @Test
+    void getLastFiveStudents_shouldReturnLastFiveStudents() {
+        // given
+        Student student1 = new Student(1L, "Student1", 17);
+        Student student2 = new Student(2L, "Student2", 18);
+        when(studentRepository.findLastFiveStudents()).thenReturn(List.of(student1, student2));
+
+        // when
+        List<Student> result = studentService.getLastFiveStudents();
+
+        // then
+        assertEquals(2, result.size());
+        verify(studentRepository, times(1)).findLastFiveStudents();
+    }
 }

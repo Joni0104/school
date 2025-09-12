@@ -171,4 +171,37 @@ class StudentControllerTestRestTemplateTest {
         assertTrue(response.getStatusCode() == HttpStatus.OK ||
                 response.getStatusCode() == HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void getTotalCount_shouldReturnStudentCount() {
+        // when
+        ResponseEntity<Integer> response = restTemplate.getForEntity(
+                getBaseUrl() + "/count", Integer.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getAverageAge_shouldReturnAverageAge() {
+        // when
+        ResponseEntity<Double> response = restTemplate.getForEntity(
+                getBaseUrl() + "/average-age", Double.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getLastFiveStudents_shouldReturnLastFiveStudents() {
+        // when
+        ResponseEntity<Student[]> response = restTemplate.getForEntity(
+                getBaseUrl() + "/last-five", Student[].class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
 }
