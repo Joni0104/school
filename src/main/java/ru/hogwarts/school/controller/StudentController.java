@@ -17,6 +17,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
         return studentService.createStudent(student);
@@ -57,5 +58,19 @@ public class StudentController {
         Optional<Student> student = studentService.findStudent(id);
         return student.map(s -> ResponseEntity.ok(s.getFaculty()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    @GetMapping("/count")
+    public Integer getTotalCount() {
+        return studentService.getTotalCount();
+    }
+
+    @GetMapping("/average-age")
+    public Double getAverageAge() {
+        return studentService.getAverageAge();
+    }
+
+    @GetMapping("/last-five")
+    public List<Student> getLastFiveStudents() {
+        return studentService.getLastFiveStudents();
     }
 }
