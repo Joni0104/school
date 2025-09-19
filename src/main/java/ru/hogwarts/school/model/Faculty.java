@@ -9,7 +9,8 @@ import java.util.Objects;
 @Entity
 @Table(
         name = "faculty",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "color"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "color"}),
+        indexes = @Index(name = "idx_faculty_name_color", columnList = "name,color")
 )
 public class Faculty {
     @Id
