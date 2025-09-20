@@ -8,7 +8,8 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(
         name = "student",
-        uniqueConstraints = @UniqueConstraint(columnNames = "name")
+        uniqueConstraints = @UniqueConstraint(columnNames = "name"),
+        indexes = @Index(name = "idx_student_name", columnList = "name")
 )
 public class Student {
     @Id
