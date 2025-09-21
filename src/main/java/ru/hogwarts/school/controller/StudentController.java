@@ -18,6 +18,7 @@ public class StudentController {
     }
 
 
+
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
         return studentService.createStudent(student);
@@ -73,4 +74,19 @@ public class StudentController {
     public List<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
+    @GetMapping("/names-starting-with-a")
+    public List<String> getStudentsNamesStartingWithA() {
+        return studentService.getStudentsNamesStartingWithA();
+    }
+
+    @GetMapping("/average-age-stream")
+    public Double getAverageAgeStream() {
+        return studentService.getAverageAge();
+    }
+
+    @GetMapping("/sum")
+    public Long calculateSum() {
+        return studentService.calculateSum();
+    }
+
 }

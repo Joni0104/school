@@ -197,4 +197,81 @@ class StudentServiceTest {
         assertEquals(2, result.size());
         verify(studentRepository, times(1)).findLastFiveStudents();
     }
+
+    @Test
+    void getStudentsNamesStartingWithA_shouldReturnFilteredSortedNames() {
+        // given
+        Student student1 = new Student(1L, "Анна", 20);
+        Student student2 = new Student(2L, "алексей", 21);
+        Student student3 = new Student(3L, "Борис", 22);
+        Student student4 = new Student(4L, "АРИНА", 19);
+        Student student5 = new Student(5L, "", 23); // пустое имя
+        Student student6 = new Student(6L, null, 24); // null имя
+
+        when(studentRepository.findAll()).thenReturn(List.of(student1, student2, student3, student4, student5, student6));
+
+        // when
+        List<String> result = studentService.getStudentsNamesStartingWithA();
+
+        // then
+        assertEquals(3, result.size());
+        assertEquals("АЛЕКСЕЙ", result.get(0));
+        assertEquals("АННА", result.get(1));
+        assertEquals("АРИНА", result.get(2));
+        verify(studentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getStudentsNamesStartingWithA_shouldReturnEmptyListWhenNoMatches() {
+        // given
+        Student student1 = new Student(1L, "Борис", 22);
+        Student student2 = new Student(2L, "Виктор", 23);
+
+        when(studentRepository.findAll()).thenReturn(List.of(student1, student2));
+
+        // when
+        List<String> result = studentService.getStudentsNamesStartingWithA();
+
+        // then
+        assertTrue(result.isEmpty());
+        verify(studentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getAverageAgeStream_shouldReturnAverageAge() {
+        // given
+        Student student1 = new Student(1L, "Анна", 20);
+        Student student2 = new Student(2L, "Алексей", 30);
+
+        when(studentRepository.findAll()).thenReturn(List.of(student1, student2));
+
+        // when
+        Double result = studentService.getAverageAgeStream();
+
+        // then
+        assertEquals(25.0, result);
+        verify(studentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getAverageAgeStream_shouldReturnZeroWhenNoStudents() {
+        // given
+        when(studentRepository.findAll()).thenReturn(List.of());
+
+        // when
+        Double result = studentService.getAverageAgeStream();
+
+        // then
+        assertEquals(0.0, result);
+        verify(studentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void calculateSum_shouldReturnCorrectSum() {
+        // when
+        Long result = studentService.calculateSum();
+
+        // then
+        assertEquals(500000500000L, result); // 1_000_000 * 1_000_001 / 2
+    }
 }

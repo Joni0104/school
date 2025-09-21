@@ -157,4 +157,34 @@ class FacultyServiceTest {
         verify(facultyRepository, times(1))
                 .findByNameIgnoreCaseOrColorIgnoreCase("gryffindor", "gryffindor");
     }
+
+    @Test
+    void getLongestFacultyName_shouldReturnLongestName() {
+        // given
+        Faculty faculty1 = new Faculty(1L, "Гриффиндор", "Красный");
+        Faculty faculty2 = new Faculty(2L, "Слизерин", "Зеленый");
+        Faculty faculty3 = new Faculty(3L, "Когтевран", "Синий");
+
+        when(facultyRepository.findAll()).thenReturn(List.of(faculty1, faculty2, faculty3));
+
+        // when
+        String result = facultyService.getLongestFacultyName();
+
+        // then
+        assertEquals("Гриффиндор", result);
+        verify(facultyRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getLongestFacultyName_shouldReturnEmptyWhenNoFaculties() {
+        // given
+        when(facultyRepository.findAll()).thenReturn(List.of());
+
+        // when
+        String result = facultyService.getLongestFacultyName();
+
+        // then
+        assertEquals("", result);
+        verify(facultyRepository, times(1)).findAll();
+    }
 }
