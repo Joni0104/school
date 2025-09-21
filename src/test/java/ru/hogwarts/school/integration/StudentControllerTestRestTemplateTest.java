@@ -1,5 +1,6 @@
 package ru.hogwarts.school.integration;
 
+import antlr.collections.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -203,5 +204,45 @@ class StudentControllerTestRestTemplateTest {
         // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+    }
+    @Test
+    void getStudentsNamesStartingWithA_shouldReturnFilteredNames() {
+        // given
+        Student student1 = new Student(null, "Анна", 20);
+        Student student2 = new Student(null, "Борис", 21);
+
+        restTemplate.postForEntity(getBaseUrl(), student1, Student.class);
+        restTemplate.postForEntity(getBaseUrl(), student2, Student.class);
+
+        // when
+        ResponseEntity<List> response = restTemplate.getForEntity(
+                getBaseUrl() + "/names-starting-with-a", List.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getAverageAgeStream_shouldReturnAverageAge() {
+        // when
+        ResponseEntity<Double> response = restTemplate.getForEntity(
+                getBaseUrl() + "/average-age-stream", Double.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void calculateSum_shouldReturnSum() {
+        // when
+        ResponseEntity<Integer> response = restTemplate.getForEntity(
+                getBaseUrl() + "/sum", Integer.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() > 0);
     }
 }

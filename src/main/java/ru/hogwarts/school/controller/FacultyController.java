@@ -17,6 +17,7 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
+
     @PostMapping
     public Faculty createFaculty(@RequestBody Faculty faculty) {
         return facultyService.createFaculty(faculty);
@@ -57,5 +58,9 @@ public class FacultyController {
         Optional<Faculty> faculty = facultyService.findFaculty(id);
         return faculty.map(f -> ResponseEntity.ok(f.getStudents()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    @GetMapping("/longest-name")
+    public String getLongestFacultyName() {
+        return facultyService.getLongestFacultyName();
     }
 }

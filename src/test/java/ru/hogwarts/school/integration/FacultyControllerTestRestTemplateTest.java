@@ -184,4 +184,21 @@ class FacultyControllerTestRestTemplateTest {
         assertTrue(response.getStatusCode() == HttpStatus.OK ||
                 response.getStatusCode() == HttpStatus.NOT_FOUND);
     }
+    @Test
+    void getLongestFacultyName_shouldReturnLongestName() {
+        // given
+        Faculty faculty1 = new Faculty(null, "Гриффиндор", "Красный");
+        Faculty faculty2 = new Faculty(null, "Слизерин", "Зеленый");
+
+        restTemplate.postForEntity(getBaseUrl(), faculty1, Faculty.class);
+        restTemplate.postForEntity(getBaseUrl(), faculty2, Faculty.class);
+
+        // when
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                getBaseUrl() + "/longest-name", String.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
 }
