@@ -6,7 +6,6 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -62,26 +61,84 @@ public class StudentService {
         return studentRepository.findLastFiveStudents();
     }
 
-    // Новые методы для Stream API задания
-    public List<String> getStudentsNamesStartingWithA() {
-        return studentRepository.findAll().stream()
-                .map(Student::getName)
-                .filter(name -> name != null && !name.isEmpty())
-                .map(String::toUpperCase)
-                .filter(upperCase -> upperCase.startsWith("А"))
-                .sorted()
-                .collect(Collectors.toList());
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 
-    public Double getAverageAgeStream() {
-        return studentRepository.findAll().stream()
-                .mapToInt(Student::getAge)
-                .average()
-                .orElse(0.0);
+    public void printStudentsParallel() {
+        List<Student> students = getAllStudents();
+
+        if (students.size() < 6) {
+            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
+            return;
+        }
+
+        // Основной поток - первые два имени
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        // Первый параллельный поток - третий и четвертый студент
+        Thread thread1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+        // Второй параллельный поток - пятый и шестой студент
+        Thread thread2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Поток был прерван");
+        }
     }
 
-    public Long calculateSum() {
-        long n = 1_000_000L;
-        return n * (n + 1) / 2;
+    public void printStudentsSynchronized() {
+        List<Student> students = getAllStudents();
+
+        if (students.size() < 6) {
+            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
+            return;
+        }
+
+        // Основной поток - первые два имени
+        printStudentNameSync(students.get(0).getName());
+        printStudentNameSync(students.get(1).getName());
+
+        // Первый параллельный поток - третий и четвертый студент
+        Thread thread1 = new Thread(() -> {
+            printStudentNameSync(students.get(2).getName());
+            printStudentNameSync(students.get(3).getName());
+        });
+
+        // Второй параллельный поток - пятый и шестой студент
+        Thread thread2 = new Thread(() -> {
+            printStudentNameSync(students.get(4).getName());
+            printStudentNameSync(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Поток был прерван");
+        }
+    }
+
+    // Синхронизированный метод для вывода имен
+    synchronized void printStudentNameSync(String name) {
+        System.out.println(name);
     }
 }

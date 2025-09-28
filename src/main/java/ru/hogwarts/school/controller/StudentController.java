@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +17,6 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-
-
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
@@ -60,6 +59,7 @@ public class StudentController {
         return student.map(s -> ResponseEntity.ok(s.getFaculty()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @GetMapping("/count")
     public Integer getTotalCount() {
         return studentService.getTotalCount();
@@ -74,19 +74,14 @@ public class StudentController {
     public List<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
-    @GetMapping("/names-starting-with-a")
-    public List<String> getStudentsNamesStartingWithA() {
-        return studentService.getStudentsNamesStartingWithA();
+
+    @GetMapping("/print-parallel")
+    public void printStudentsParallel() {
+        studentService.printStudentsParallel();
     }
 
-    @GetMapping("/average-age-stream")
-    public Double getAverageAgeStream() {
-        return studentService.getAverageAge();
+    @GetMapping("/print-synchronized")
+    public void printStudentsSynchronized() {
+        studentService.printStudentsSynchronized();
     }
-
-    @GetMapping("/sum")
-    public Long calculateSum() {
-        return studentService.calculateSum();
-    }
-
 }
