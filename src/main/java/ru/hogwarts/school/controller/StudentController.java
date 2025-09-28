@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -88,5 +89,79 @@ public class StudentController {
     public Long calculateSum() {
         return studentService.calculateSum();
     }
+    @GetMapping("/print-parallel")
+    public void printStudentsParallel() {
+        List<Student> students = studentService.getAllStudents();
 
+        if (students.size() < 6) {
+            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
+            return;
+        }
+
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Поток был прерван");
+        }
+    }
+
+    @GetMapping("/print-synchronized")
+    public void printStudentsSynchronized() {
+        List<Student> students = studentService.getAllStudents();
+
+        if (students.size() < 6) {
+            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
+            return;
+        }
+
+
+        printStudentNameSync(students.get(0).getName());
+        printStudentNameSync(students.get(1).getName());
+
+
+        Thread thread1 = new Thread(() -> {
+            printStudentNameSync(students.get(2).getName());
+            printStudentNameSync(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            printStudentNameSync(students.get(4).getName());
+            printStudentNameSync(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Поток был прерван");
+        }
+    }
+
+    private synchronized void printStudentNameSync(String name) {
+        System.out.println(name);
+    }
 }

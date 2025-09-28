@@ -84,4 +84,7 @@ public class StudentService {
         long n = 1_000_000L;
         return n * (n + 1) / 2;
     }
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
 }
