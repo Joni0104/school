@@ -18,8 +18,6 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-
-
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
         return studentService.createStudent(student);
@@ -61,6 +59,7 @@ public class StudentController {
         return student.map(s -> ResponseEntity.ok(s.getFaculty()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @GetMapping("/count")
     public Integer getTotalCount() {
         return studentService.getTotalCount();
@@ -75,93 +74,14 @@ public class StudentController {
     public List<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
-    @GetMapping("/names-starting-with-a")
-    public List<String> getStudentsNamesStartingWithA() {
-        return studentService.getStudentsNamesStartingWithA();
-    }
 
-    @GetMapping("/average-age-stream")
-    public Double getAverageAgeStream() {
-        return studentService.getAverageAge();
-    }
-
-    @GetMapping("/sum")
-    public Long calculateSum() {
-        return studentService.calculateSum();
-    }
     @GetMapping("/print-parallel")
     public void printStudentsParallel() {
-        List<Student> students = studentService.getAllStudents();
-
-        if (students.size() < 6) {
-            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
-            return;
-        }
-
-
-        System.out.println(students.get(0).getName());
-        System.out.println(students.get(1).getName());
-
-        Thread thread1 = new Thread(() -> {
-            System.out.println(students.get(2).getName());
-            System.out.println(students.get(3).getName());
-        });
-
-
-        Thread thread2 = new Thread(() -> {
-            System.out.println(students.get(4).getName());
-            System.out.println(students.get(5).getName());
-        });
-
-        thread1.start();
-        thread2.start();
-
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Поток был прерван");
-        }
+        studentService.printStudentsParallel();
     }
 
     @GetMapping("/print-synchronized")
     public void printStudentsSynchronized() {
-        List<Student> students = studentService.getAllStudents();
-
-        if (students.size() < 6) {
-            System.out.println("Недостаточно студентов для демонстрации (нужно минимум 6)");
-            return;
-        }
-
-
-        printStudentNameSync(students.get(0).getName());
-        printStudentNameSync(students.get(1).getName());
-
-
-        Thread thread1 = new Thread(() -> {
-            printStudentNameSync(students.get(2).getName());
-            printStudentNameSync(students.get(3).getName());
-        });
-
-        Thread thread2 = new Thread(() -> {
-            printStudentNameSync(students.get(4).getName());
-            printStudentNameSync(students.get(5).getName());
-        });
-
-        thread1.start();
-        thread2.start();
-
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Поток был прерван");
-        }
-    }
-
-    private synchronized void printStudentNameSync(String name) {
-        System.out.println(name);
+        studentService.printStudentsSynchronized();
     }
 }
