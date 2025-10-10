@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StudentControllerTestRestTemplateTest {
 
+
     @LocalServerPort
     private int port;
 
@@ -244,5 +245,24 @@ class StudentControllerTestRestTemplateTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody() > 0);
+    }
+    @Test
+    void printStudentsParallel_shouldReturnOk() {
+        // when
+        ResponseEntity<Void> response = restTemplate.getForEntity(
+                getBaseUrl() + "/print-parallel", Void.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void printStudentsSynchronized_shouldReturnOk() {
+        // when
+        ResponseEntity<Void> response = restTemplate.getForEntity(
+                getBaseUrl() + "/print-synchronized", Void.class);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }
